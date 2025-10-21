@@ -651,6 +651,8 @@ static const gchar *target_id_to_target_name (gint target_id);
 
 static int32_t get_imx219_ae_dyn_params (IssAeDynamicParams * p_ae_dynPrms);
 
+static int32_t get_imx678_ae_dyn_params (IssAeDynamicParams * p_ae_dynPrms);
+
 static int32_t get_imx390_ae_dyn_params (IssAeDynamicParams * p_ae_dynPrms);
 
 static int32_t get_ov2312_ae_dyn_params (IssAeDynamicParams * p_ae_dynPrms);
