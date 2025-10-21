@@ -2017,8 +2017,17 @@ get_imx678_ae_dyn_params (IssAeDynamicParams * p_ae_dynPrms)
   // DCC tool uses 1x gain = 1024 == 1x, but IMX678 operates in dB
   p_ae_dynPrms->analogGainRange[count].min = 0; // 0 dB (reg == 0)
   p_ae_dynPrms->analogGainRange[count].max = 1024 * 240; // 72 dB (reg == 240)
-  p_ae_dynPrms->exposureTimeRange[count].min = 1024; // todo calc and convert to us
-  p_ae_dynPrms->exposureTimeRange[count].max = 2247;  // todo calc and convert to us
+
+  // 3856x2180 @ 30 FPS
+  // freq - IMX678_LINK_FREQ_1188
+  // hmax - 0x44C - 1100
+  //
+  // min_exposure_lines - 2 lines
+  // line_time - 1100 * (10 ** 9 / 74_250_000) = 14814.8 ns
+  // frame_length - (1/30)*10**9 / 14814.8 = 2250.0 lines
+  // max_exposures_lines - (2250 - 2) - 2248 lines
+  p_ae_dynPrms->exposureTimeRange[count].min = 30; // 2 * 14.8 us
+  p_ae_dynPrms->exposureTimeRange[count].max = 33270; // 2248 * 14.8 us
   
   count++;
 
@@ -2137,8 +2146,7 @@ gst_tiovx_isp_map_2A_values (GstTIOVXISP * self, int exposure_time,
     multiplier = analog_gain / 1024.0;
     *analog_gain_mapped = 256.0 - 256.0 / multiplier;
   } else if (g_strcmp0 (self->sensor_name, "SENSOR_SONY_IMX678_RPI") == 0) {
-    // TODO
-    // *exposure_time_mapped = (1080 * exposure_time / 33333);
+    *exposure_time_mapped = exposure_time / 14.8; // line_time ~= 14.8
     *analog_gain_mapped = analog_gain / 1024.0; // 1024 is 1x gain */
   } else if (g_strcmp0 (self->sensor_name, "SENSOR_OV2312_UB953_LI") == 0) {
     *exposure_time_mapped = (60 * 1300 * exposure_time / 1000000);
