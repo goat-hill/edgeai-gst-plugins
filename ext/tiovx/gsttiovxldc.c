@@ -312,6 +312,7 @@ gst_tiovx_ldc_class_init (GstTIOVXLDCClass * klass)
           "                              SENSOR_ONSEMI_AR0820_UB953_LI\n"
           "                              SENSOR_ONSEMI_AR0233_UB953_MARS\n"
           "                              SENSOR_SONY_IMX219_RPI\n"
+          "                              SENSOR_SONY_IMX678_RPI\n"
           "                              SENSOR_OV2312_UB953_LI",
           NULL,
           G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS |
