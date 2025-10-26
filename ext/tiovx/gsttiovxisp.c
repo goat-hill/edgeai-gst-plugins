@@ -2017,8 +2017,9 @@ get_imx678_ae_dyn_params (IssAeDynamicParams * p_ae_dynPrms)
   p_ae_dynPrms->digitalGainRange[count].max = 256; // not used
 
   // DCC tool uses 1x gain = 1024 == 1x, but IMX678 operates in dB
-  p_ae_dynPrms->analogGainRange[count].min = 0; // 0 dB (reg == 0)
-  p_ae_dynPrms->analogGainRange[count].max = 1024 * 240; // 72 dB (reg == 240)
+  // 2A algorithm expects linear gain multiple
+  p_ae_dynPrms->analogGainRange[count].min = 1024; // 0 dB == 1x (reg == 0)
+  p_ae_dynPrms->analogGainRange[count].max = 4076617; // 72 dB == 3981x (reg == 240)
 
   // 3856x2180 @ 30 FPS
   // freq - IMX678_LINK_FREQ_1188
@@ -2149,7 +2150,7 @@ gst_tiovx_isp_map_2A_values (GstTIOVXISP * self, int exposure_time,
     *analog_gain_mapped = 256.0 - 256.0 / multiplier;
   } else if (g_strcmp0 (self->sensor_name, "SENSOR_SONY_IMX678_RPI") == 0) {
     *exposure_time_mapped = exposure_time / 14.8; // line_time ~= 14.8
-    *analog_gain_mapped = analog_gain / 1024.0; // 1024 is 1x gain */
+    *analog_gain_mapped = 20 * log10f(analog_gain / 1024);
   } else if (g_strcmp0 (self->sensor_name, "SENSOR_OV2312_UB953_LI") == 0) {
     *exposure_time_mapped = (60 * 1300 * exposure_time / 1000000);
     // ms to row_time conversion - row_time(us) = 1000000/fps/height
